@@ -120,7 +120,7 @@ end
 
 args = {...}
 if (#args < 7) then
-    print("Usage: mine <block> <amount> <height> <x> <y> <z> <direction>")
+    print("Usage: ccminer <block> <amount> <height> <x> <y> <z> <direction>")
     error("Invalid parameters")
 end
 
