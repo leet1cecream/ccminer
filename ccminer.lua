@@ -2,27 +2,27 @@
 
 settings = {
     ["tunnelHuman"] = true,
-    ["tunnelSpacing"] = 16,
-    ["validBlocks"]
+    ["tunnelSpacing"] = 16
 }
 
 -- CONSTANTS ==============================================================
 
-ore_block_ids = {
-    ["minecraft:coal_ore"] = "coal",
-    ["minecraft:iron_ore"] = "iron",
-    ["minecraft:gold_ore"] = "gold",
-    ["minecraft:redstone_ore"] = "redstone",
-    ["minecraft:lapis_ore"] = "lapis",
-    ["minecraft:diamond_ore"] = "diamond",
-    ["minecraft:emerald_ore"] = "emerald",
-    ["minecraft:quartz_ore"] = "quartz",
-    ["thermalfoundation:ore"] = "thermalfoundation:ore",
-    ["mekanism:oreblock"] = "mekanism:oreblock"
- }
- 
+local ore_block_ids = {
+    "coal",
+    "iron",
+    "gold",
+    "redstone",
+    "lapis",
+    "diamond",
+    "emerald",
+    "quartz",
+    "thermalfoundation:ore",
+    "mekanism:oreblock"
+}
 
--- MOVEMENT ===============================================================
+-- UTILITY ================================================================
+
+
 
 -- translate the direction string to a numbered direction
 function translateDirection(direction)
@@ -38,6 +38,10 @@ function translateDirection(direction)
         error("Invalid direction: " .. direction)
     end
 end
+
+
+
+-- MOVEMENT ===============================================================
 
 -- turn the turtle to face the given direction
 function turn(direction)
