@@ -1,3 +1,29 @@
+-- CCMINER by leet1cecream
+
+settings = {
+    ["tunnelHuman"] = true,
+    ["tunnelSpacing"] = 16,
+    ["validBlocks"]
+}
+
+-- CONSTANTS ==============================================================
+
+ore_block_ids = {
+    ["minecraft:coal_ore"] = "coal",
+    ["minecraft:iron_ore"] = "iron",
+    ["minecraft:gold_ore"] = "gold",
+    ["minecraft:redstone_ore"] = "redstone",
+    ["minecraft:lapis_ore"] = "lapis",
+    ["minecraft:diamond_ore"] = "diamond",
+    ["minecraft:emerald_ore"] = "emerald",
+    ["minecraft:quartz_ore"] = "quartz",
+    ["thermalfoundation:ore"] = "thermalfoundation:ore",
+    ["mekanism:oreblock"] = "mekanism:oreblock"
+ }
+ 
+
+-- MOVEMENT ===============================================================
+
 -- translate the direction string to a numbered direction
 function translateDirection(direction)
     if direction == "north" then
