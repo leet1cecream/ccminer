@@ -2,7 +2,13 @@
 
 settings = {
     ["tunnelHuman"] = true,
-    ["tunnelSpacing"] = 16
+    ["tunnelSpacing"] = 16,
+    ["tunnelMaxWander"] = 8,
+    ["autoRefuel"] = true,
+    ["autoRefuelLevel"] = 1000,
+    ["autoRefuelCoals"] = 128
+    ["modemBroadcast"] = false,
+    ["modemSlot"] = 16
 }
 
 -- CONSTANTS ==============================================================
@@ -21,8 +27,6 @@ local ore_block_ids = {
 }
 
 -- UTILITY ================================================================
-
-
 
 -- translate the direction string to a numbered direction
 function translateDirection(direction)
