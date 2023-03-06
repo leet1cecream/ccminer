@@ -6,7 +6,7 @@ settings = {
     ["tunnelMaxWander"] = 8,
     ["autoRefuel"] = true,
     ["autoRefuelLevel"] = 1000,
-    ["autoRefuelCoals"] = 128
+    ["autoRefuelCoals"] = 64,
     ["modemBroadcast"] = false,
     ["modemSlot"] = 16
 }
@@ -36,6 +36,18 @@ end
 -- check if the turtle has enough fuel to travel to the given block and return home
 function checkBlockFuel(block)
     return ((getDistance(currentX, currentY, currentZ, currentX + block.x, currentY + block.y, currentZ + block.z) + getDistance(currentX, currentY, currentZ, homeX, homeY, homeZ)) < turtle.getFuelLevel())
+end
+
+-- return number of items in the turtles inventory based on the item name provided
+function getItemCount(itemName)
+    count = 0
+    for i = 1,16 do
+        itemDetails = turtle.getItemDetail(i)
+        if itemDetails then
+            count = count + itemDetails
+        end
+    end
+    return count
 end
 
 -- translate the direction string to a numbered direction
@@ -178,6 +190,8 @@ end
 function mineBlock(block)
     moveTo(currentX + block.x, currentY + block.y, currentZ + block.z)
 end
+
+-- MAIN ============================================================
 
 function main()
     while true do
