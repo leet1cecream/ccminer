@@ -237,6 +237,12 @@ function mineBlock(block)
     moveTo(currentPos.x + block.x, currentPos.y + block.y, currentPos.z + block.z)
 end
 
+function returnHome()
+    moveTo(homePos.x, homePos.y, homePos.z)
+    turn(homePos.direction)
+    organizeInventory()
+end
+
 -- MAIN ============================================================
 
 function main()
@@ -258,7 +264,7 @@ function main()
     
         if found then
             if checkBlockFuel(nearestBlock) == false then
-                moveTo(homePos.x, homePos.y, homePos.z)
+                returnHome()
                 error("Ran out of fuel!")
             end
     
@@ -281,7 +287,7 @@ function main()
             end
         end
         if count >= blockAmount then
-            moveTo(homePos.x, homePos.y, homePos.z)
+            returnHome()
             error("Success!")
         end
     end
