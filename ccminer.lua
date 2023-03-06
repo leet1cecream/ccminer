@@ -44,10 +44,37 @@ function getItemCount(itemName)
     for i = 1,16 do
         itemDetails = turtle.getItemDetail(i)
         if itemDetails then
-            count = count + itemDetails
+            if string.find(itemDetails.name, itemName) then
+                count = count + itemDetails.count
+            end
         end
     end
     return count
+end
+
+function clearInventory()
+    for i = 1, 16 do
+        itemDetails = turtle.getItemDetail(i)
+        if itemDetails then
+            if not string.find(itemDetails.name, blockName) and not string.find(itemDetails.name, "peripheral") and not string.find(itemDetails.name, "module") and not string.find(itemDetails.name, "modem") then
+                turtle.select(i)
+                turtle.drop()
+            end
+        end
+    end
+end
+
+function organizeInventory()
+    clearInventory()
+    for i = 1, 14 do
+        for j = i + 1, 15 do
+            itemDetails = turtle.getItemDetail(j)
+            if itemDetails then
+                turtle.select(j)
+                turtle.transferTo(i)
+            end
+        end
+    end
 end
 
 -- translate the direction string to a numbered direction
@@ -262,4 +289,7 @@ currentDirection = translateDirection(args[7])
 heightLimit = 6
 scanner = peripheral.wrap("left")
 
-main()
+print(getItemCount("coal"))
+organizeInventory()
+
+--main()
