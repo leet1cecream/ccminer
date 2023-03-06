@@ -142,6 +142,11 @@ end
 
 -- move the turtle in the given direction
 function move(direction)
+    -- dig the block above for a human to be able to move there
+    if settings["tunnelHuman"] then
+        digUntilEmpty("up")
+    end
+
     if direction == "up" then
         digUntilEmpty("up")
         turtle.up()
@@ -289,7 +294,4 @@ currentDirection = translateDirection(args[7])
 heightLimit = 6
 scanner = peripheral.wrap("left")
 
-print(getItemCount("coal"))
-organizeInventory()
-
---main()
+main()
