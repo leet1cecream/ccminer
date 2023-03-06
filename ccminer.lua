@@ -42,51 +42,6 @@ function checkBlockFuel(block)
     return (getDistanceFromBlock(block) + getDistance(currentPos.x, currentPos.y, currentPos.z, homePos.x, homePos.y, homePos.z)) < turtle.getFuelLevel()
 end
 
--- return number of items in the turtles inventory based on the item name provided
-function getItemCount(itemName)
-    count = 0
-    for i = 1,16 do
-        itemDetails = turtle.getItemDetail(i)
-        if itemDetails then
-            if string.find(itemDetails.name, itemName) then
-                count = count + itemDetails.count
-            end
-        end
-    end
-    return count
-end
-
-function clearInventory()
-    for i = 1, 16 do
-        itemDetails = turtle.getItemDetail(i)
-        if itemDetails then
-            if not string.find(itemDetails.name, blockName) and not string.find(itemDetails.name, "peripheral") and not string.find(itemDetails.name, "module") and not string.find(itemDetails.name, "modem") then
-                turtle.select(i)
-                turtle.drop()
-            end
-        end
-    end
-end
-
-function organizeInventory()
-    clearInventory()
-    for i = 1, 14 do
-        for j = i + 1, 15 do
-            itemDetails = turtle.getItemDetail(i)
-            if itemDetails then
-                if itemDetails.count == 64 then
-                    break
-                end
-            end
-            itemDetails = turtle.getItemDetail(j)
-            if itemDetails then
-                turtle.select(j)
-                turtle.transferTo(i)
-            end
-        end
-    end
-end
-
 -- translate the direction string to a numbered direction
 function translateDirection(direction)
     if direction == "north" then
@@ -126,6 +81,55 @@ function digUntilEmpty(direction)
                 turtle.dig()
             else
                 detected = false
+            end
+        end
+    end
+end
+
+-- INVENTORY ==============================================================
+
+-- return number of items in the turtles inventory based on the item name provided
+function getItemCount(itemName)
+    count = 0
+    for i = 1,16 do
+        itemDetails = turtle.getItemDetail(i)
+        if itemDetails then
+            if string.find(itemDetails.name, itemName) then
+                count = count + itemDetails.count
+            end
+        end
+    end
+    return count
+end
+
+-- clears the turtles inventory of all items we don't want to keep
+function clearInventory()
+    for i = 1, 16 do
+        itemDetails = turtle.getItemDetail(i)
+        if itemDetails then
+            if not string.find(itemDetails.name, blockName) and not string.find(itemDetails.name, "peripheral") and not string.find(itemDetails.name, "module") and not string.find(itemDetails.name, "modem") then
+                turtle.select(i)
+                turtle.drop()
+            end
+        end
+    end
+end
+
+-- clears the turtles inventory and reorders it
+function organizeInventory()
+    clearInventory()
+    for i = 1, 14 do
+        for j = i + 1, 15 do
+            itemDetails = turtle.getItemDetail(i)
+            if itemDetails then
+                if itemDetails.count == 64 then
+                    break
+                end
+            end
+            itemDetails = turtle.getItemDetail(j)
+            if itemDetails then
+                turtle.select(j)
+                turtle.transferTo(i)
             end
         end
     end
