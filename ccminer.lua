@@ -33,9 +33,13 @@ function getDistance(x1, y1, z1, x2, y2, z2)
     return math.sqrt(math.pow(x2-x1, 2) + math.pow(y2-y1, 2) + math.pow(z2-z1, 2))
 end
 
+function getDistanceFromBlock(block)
+    return getDistance(currentPos.x, currentPos.y, currentPos.z, currentPos.x + block.x, currentPos.y + block.y, currentPos.z + block.z)
+end
+
 -- check if the turtle has enough fuel to travel to the given block and return home
 function checkBlockFuel(block)
-    return ((getDistance(currentX, currentY, currentZ, currentX + block.x, currentY + block.y, currentZ + block.z) + getDistance(currentX, currentY, currentZ, homeX, homeY, homeZ)) < turtle.getFuelLevel())
+    return (getDistanceFromBlock(block) + getDistance(currentPos.x, currentPos.y, currentPos.z, homePos.x, homePos.y, homePos.z)) < turtle.getFuelLevel()
 end
 
 -- return number of items in the turtles inventory based on the item name provided
@@ -132,8 +136,8 @@ end
 -- turn the turtle to face the given direction
 function turn(direction)
     local numberedDirection = translateDirection(direction)
-    local clockwise = (currentDirection - numberedDirection + 4) % 4
-    local counterclockwise = (numberedDirection - currentDirection + 4) % 4
+    local clockwise = (currentPos.direction - numberedDirection + 4) % 4
+    local counterclockwise = (numberedDirection - currentPos.direction + 4) % 4
     if clockwise <= counterclockwise then
         for i = 1, clockwise do
             turtle.turnRight()
@@ -143,7 +147,7 @@ function turn(direction)
             turtle.turnLeft()
         end
     end
-    currentDirection = numberedDirection
+    currentPos.direction = numberedDirection
 end
 
 -- move the turtle in the given direction
@@ -156,31 +160,31 @@ function move(direction)
     if direction == "up" then
         digUntilEmpty("up")
         turtle.up()
-        currentY = currentY + 1
+        currentPos.y = currentPos.y + 1
     elseif direction == "down" then
         digUntilEmpty("down")
         turtle.down()
-        currentY = currentY - 1
+        currentPos.y = currentPos.y - 1
     elseif direction == "north" then
         turn("north")
         digUntilEmpty("")
         turtle.forward()
-        currentZ = currentZ - 1
+        currentPos.z = currentPos.z - 1
     elseif direction == "south" then
         turn("south")
         digUntilEmpty("")
         turtle.forward()
-        currentZ = currentZ + 1
+        currentPos.z = currentPos.z + 1
     elseif direction == "west" then
         turn("west")
         digUntilEmpty("")
         turtle.forward()
-        currentX = currentX - 1
+        currentPos.x = currentPos.x - 1
     elseif direction == "east" then
         turn("east")
         digUntilEmpty("")
         turtle.forward()
-        currentX = currentX + 1
+        currentPos.x = currentPos.x + 1
     else
         error("Invalid direction: " .. direction)
     end
@@ -189,7 +193,7 @@ end
 -- move the turtle to the given coordinates
 function moveTo(x, y, z)
     -- calculate the distance in x, y, and z directions
-    local dx, dy, dz = x - currentX, y - currentY, z - currentZ
+    local dx, dy, dz = x - currentPos.x, y - currentPos.y, z - currentPos.z
 
     -- move in the x direction
     if dx > 0 then
@@ -226,7 +230,7 @@ function moveTo(x, y, z)
 end
 
 function mineBlock(block)
-    moveTo(currentX + block.x, currentY + block.y, currentZ + block.z)
+    moveTo(currentPos.x + block.x, currentPos.y + block.y, currentPos.z + block.z)
 end
 
 -- MAIN ============================================================
@@ -238,9 +242,9 @@ function main()
         nearestBlock = nil
         nearestDistance = 99999999
         for _, block in pairs(scanner.scan()) do
-            if string.find(block.name, blockName) and currentY + block.y > heightLimit then
+            if string.find(block.name, blockName) and currentPos.y + block.y > heightLimit then
                 found = true
-                distance = getDistance(currentX, currentY, currentZ, currentX + block.x, currentY + block.y, currentZ + block.z)
+                distance = getDistanceFromBlock(block)
                 if distance < nearestDistance then
                     nearestDistance = distance
                     nearestBlock = block
@@ -250,13 +254,13 @@ function main()
     
         if found then
             if checkBlockFuel(nearestBlock) == false then
-                moveTo(homeX, homeY, homeZ)
+                moveTo(homePos.x, homePos.y, homePos.z)
                 error("Ran out of fuel!")
             end
     
             mineBlock(nearestBlock)
         else
-            moveTo(currentX, idealHeight, currentZ)
+            moveTo(currentPos.x, idealHeight, currentPos.z)
             move("north")
         end
     
@@ -273,7 +277,7 @@ function main()
             end
         end
         if count >= blockAmount then
-            moveTo(homeX, homeY, homeZ)
+            moveTo(homePos.x, homePos.y, homePos.z)
             error("Success!")
         end
     end
@@ -288,14 +292,9 @@ end
 blockName = args[1]
 blockAmount = tonumber(args[2])
 idealHeight = tonumber(args[3])
-homeX = args[4]
-homeY = args[5]
-homeZ = args[6]
 
-currentX = homeX
-currentY = homeY
-currentZ = homeZ
-currentDirection = translateDirection(args[7])
+homePos = {x = args[4], y = args[5], z = args[6], direction = translateDirection(args[7])}
+currentPos = {x = args[4], y = args[5], z = args[6], direction = translateDirection(args[7])}
 
 heightLimit = 6
 scanner = peripheral.wrap("left")
