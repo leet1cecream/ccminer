@@ -1,7 +1,7 @@
 -- CCMINER by leet1cecream
 
 settings = {
-    ["tunnelHuman"] = true,
+    ["tunnelHuman"] = false,
     ["tunnelSpacing"] = 16,
     ["tunnelMaxWander"] = 8,
     ["autoRefuel"] = true,
@@ -267,26 +267,14 @@ function main()
                 returnHome()
                 error("Ran out of fuel!")
             end
-    
+            clearInventory()
             mineBlock(nearestBlock)
         else
             moveTo(currentPos.x, idealHeight, currentPos.z)
             move("north")
         end
-    
-        count = 0
-        for i = 1,12 do
-            itemDetail = turtle.getItemDetail(i)
-            if itemDetail then
-                if not string.find(itemDetail.name, blockName) then
-                    turtle.select(i)
-                    turtle.drop()
-                else
-                    count = count + itemDetail.count
-                end
-            end
-        end
-        if count >= blockAmount then
+
+        if getItemCount(blockName) >= blockAmount then
             returnHome()
             error("Success!")
         end
@@ -303,7 +291,7 @@ blockName = args[1]
 blockAmount = tonumber(args[2])
 idealHeight = tonumber(args[3])
 
-homePos = {x = args[4], y = args[5], z = args[6], direction = translateDirection(args[7])}
+homePos = {x = args[4], y = args[5], z = args[6], direction = args[7]}
 currentPos = {x = args[4], y = args[5], z = args[6], direction = translateDirection(args[7])}
 
 heightLimit = 6
