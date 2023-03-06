@@ -32,7 +32,7 @@ end
 
 function digUntilEmpty(direction)
     detected = true
-    while detected then
+    while detected do
         if direction == "up" then
             if turtle.detectUp() then
                 detected = true
