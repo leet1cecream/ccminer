@@ -30,34 +30,62 @@ function turn(direction)
     currentDirection = numberedDirection
 end
 
+function digUntilEmpty(direction)
+    detected = true
+    while detected then
+        if direction == "up" then
+            if turtle.detectUp() then
+                detected = true
+                turtle.digUp()
+            else
+                detected = false
+            end
+        elseif direction == "down" then
+            if turtle.detectDown() then
+                detected = true
+                turtle.digDown()
+            else
+                detected = false
+            end
+        else
+            if turtle.detect() then
+                detected = true
+                turtle.dig()
+            else
+                detected = false
+            end
+        end
+    end
+end
+
 -- move the turtle in the given direction
 function move(direction)
     if direction == "up" then
-        turtle.digUp()
+        digUntilEmpty("up")
         turtle.up()
         currentY = currentY + 1
     elseif direction == "down" then
-        turtle.digDown()
+        digUntilEmpty("down")
         turtle.down()
         currentY = currentY - 1
     elseif direction == "north" then
         turn("north")
-        turtle.dig()
+        digUntilEmpty("")
         turtle.forward()
         currentZ = currentZ - 1
     elseif direction == "south" then
         turn("south")
-        turtle.dig()
+        digUntilEmpty("")
         turtle.forward()
         currentZ = currentZ + 1
     elseif direction == "west" then
         turn("west")
-        turtle.dig()
+        digUntilEmpty("")
         turtle.forward()
         currentX = currentX - 1
     elseif direction == "east" then
         turn("east")
-        turtle.dig()
+        digUntilEmpty("")
         turtle.forward()
         currentX = currentX + 1
     else
