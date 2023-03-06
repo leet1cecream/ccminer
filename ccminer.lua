@@ -68,6 +68,12 @@ function organizeInventory()
     clearInventory()
     for i = 1, 14 do
         for j = i + 1, 15 do
+            itemDetails = turtle.getItemDetail(i)
+            if itemDetails then
+                if itemDetails.count == 64 then
+                    break
+                end
+            end
             itemDetails = turtle.getItemDetail(j)
             if itemDetails then
                 turtle.select(j)
