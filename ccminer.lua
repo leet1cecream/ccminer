@@ -28,6 +28,16 @@ local ore_block_ids = {
 
 -- UTILITY ================================================================
 
+-- calculate the distance between two sets of coordinates
+function getDistance(x1, y1, z1, x2, y2, z2)
+    return math.sqrt(math.pow(x2-x1, 2) + math.pow(y2-y1, 2) + math.pow(z2-z1, 2))
+end
+
+-- check if the turtle has enough fuel to travel to the given block and return home
+function checkBlockFuel(block)
+    return ((getDistance(currentX, currentY, currentZ, currentX + block.x, currentY + block.y, currentZ + block.z) + getDistance(currentX, currentY, currentZ, homeX, homeY, homeZ)) < turtle.getFuelLevel())
+end
+
 -- translate the direction string to a numbered direction
 function translateDirection(direction)
     if direction == "north" then
@@ -43,27 +53,7 @@ function translateDirection(direction)
     end
 end
 
-
-
--- MOVEMENT ===============================================================
-
--- turn the turtle to face the given direction
-function turn(direction)
-    local numberedDirection = translateDirection(direction)
-    local clockwise = (currentDirection - numberedDirection + 4) % 4
-    local counterclockwise = (numberedDirection - currentDirection + 4) % 4
-    if clockwise <= counterclockwise then
-        for i = 1, clockwise do
-            turtle.turnRight()
-        end
-    else
-        for i = 1, counterclockwise do
-            turtle.turnLeft()
-        end
-    end
-    currentDirection = numberedDirection
-end
-
+-- dig in the specified direction until there is no block left
 function digUntilEmpty(direction)
     detected = true
     while detected do
@@ -90,6 +80,25 @@ function digUntilEmpty(direction)
             end
         end
     end
+end
+
+-- MOVEMENT ===============================================================
+
+-- turn the turtle to face the given direction
+function turn(direction)
+    local numberedDirection = translateDirection(direction)
+    local clockwise = (currentDirection - numberedDirection + 4) % 4
+    local counterclockwise = (numberedDirection - currentDirection + 4) % 4
+    if clockwise <= counterclockwise then
+        for i = 1, clockwise do
+            turtle.turnRight()
+        end
+    else
+        for i = 1, counterclockwise do
+            turtle.turnLeft()
+        end
+    end
+    currentDirection = numberedDirection
 end
 
 -- move the turtle in the given direction
@@ -170,14 +179,52 @@ function mineBlock(block)
     moveTo(currentX + block.x, currentY + block.y, currentZ + block.z)
 end
 
--- calculate the distance between two sets of coordinates
-function getDistance(x1, y1, z1, x2, y2, z2)
-    return math.sqrt(math.pow(x2-x1, 2) + math.pow(y2-y1, 2) + math.pow(z2-z1, 2))
-end
-
--- check if the turtle has enough fuel to travel to the given block and return home
-function checkBlockFuel(block)
-    return ((getDistance(currentX, currentY, currentZ, currentX + block.x, currentY + block.y, currentZ + block.z) + getDistance(currentX, currentY, currentZ, homeX, homeY, homeZ)) < turtle.getFuelLevel())
+function main()
+    while true do
+        -- find the nearest block to mine
+        found = false
+        nearestBlock = nil
+        nearestDistance = 99999999
+        for _, block in pairs(scanner.scan()) do
+            if string.find(block.name, blockName) and currentY + block.y > heightLimit then
+                found = true
+                distance = getDistance(currentX, currentY, currentZ, currentX + block.x, currentY + block.y, currentZ + block.z)
+                if distance < nearestDistance then
+                    nearestDistance = distance
+                    nearestBlock = block
+                end
+            end
+        end
+    
+        if found then
+            if checkBlockFuel(nearestBlock) == false then
+                moveTo(homeX, homeY, homeZ)
+                error("Ran out of fuel!")
+            end
+    
+            mineBlock(nearestBlock)
+        else
+            moveTo(currentX, idealHeight, currentZ)
+            move("north")
+        end
+    
+        count = 0
+        for i = 1,12 do
+            itemDetail = turtle.getItemDetail(i)
+            if itemDetail then
+                if not string.find(itemDetail.name, blockName) then
+                    turtle.select(i)
+                    turtle.drop()
+                else
+                    count = count + itemDetail.count
+                end
+            end
+        end
+        if count >= blockAmount then
+            moveTo(homeX, homeY, homeZ)
+            error("Success!")
+        end
+    end
 end
 
 args = {...}
@@ -199,51 +246,6 @@ currentZ = homeZ
 currentDirection = translateDirection(args[7])
 
 heightLimit = 6
-
 scanner = peripheral.wrap("left")
 
-while true do
-    -- find the nearest block to mine
-    found = false
-    nearestBlock = nil
-    nearestDistance = 99999999
-    for _, block in pairs(scanner.scan()) do
-        if string.find(block.name, blockName) and currentY + block.y > heightLimit then
-            found = true
-            distance = getDistance(currentX, currentY, currentZ, currentX + block.x, currentY + block.y, currentZ + block.z)
-            if distance < nearestDistance then
-                nearestDistance = distance
-                nearestBlock = block
-            end
-        end
-    end
-
-    if found then
-        if checkBlockFuel(nearestBlock) == false then
-            moveTo(homeX, homeY, homeZ)
-            error("Ran out of fuel!")
-        end
-
-        mineBlock(nearestBlock)
-    else
-        moveTo(currentX, idealHeight, currentZ)
-        move("north")
-    end
-
-    count = 0
-    for i = 1,12 do
-        itemDetail = turtle.getItemDetail(i)
-        if itemDetail then
-            if not string.find(itemDetail.name, blockName) then
-                turtle.select(i)
-                turtle.drop()
-            else
-                count = count + itemDetail.count
-            end
-        end
-    end
-    if count >= blockAmount then
-        moveTo(homeX, homeY, homeZ)
-        error("Success!")
-    end
-end
+main()
